@@ -5,6 +5,7 @@ from git import Repo
 import os
 import ComplexCalc as cc
 import shutil
+import collections
 
 class GitPyService:
 	def __init__(self, url, path):
@@ -20,26 +21,62 @@ class GitPyService:
 			Repo.clone_from(url, path)
 		return Repo(path)
 
-	def GetTotalCommits(self):
+	def get_metrics(self):
 		allCommits = self.repo.iter_commits()
-		count = 0
-		count = sum(1 for commit in allCommits)
-		return count
-
-	def GetTopCommitters(self, max=10):
-		allCommits = self.repo.iter_commits()
-		dictionary = {}
-		count = 0
+		commitCount = 0
+		committers    = collections.OrderedDict()
+		modifiedFiles = collections.OrderedDict()
 		while True:
 			try:
-				element = next(allCommits)
-				if element.author.name in dictionary:
-					dictionary[element.author.name] = dictionary[element.author.name] + 1
+				commit = next(allCommits)
+				commitCount += 1
+				if commit.author.email in committers:
+					committers[commit.author.email] = committers[commit.author.email] + 1
 				else:
-					dictionary[element.author.name] = 1
+					committers[commit.author.email] = 1
+				for key in commit.stats.files:
+					if key in modifiedFiles:
+						modifiedFiles[key] = modifiedFiles[key] + 1
+					else:
+						modifiedFiles[key] = 1
 			except StopIteration:
 				break
-		return dictionary
+
+		ordered_committers = {}
+		for key, value in sorted(committers.items(), key=lambda kv: kv[1], reverse=True):
+			ordered_committers[key] = value
+			
+		ordered_files = {}
+		for key, value in sorted(modifiedFiles.items(), key=lambda kv: kv[1], reverse=True):
+			ordered_files[key] = value
+			
+		no_config_ordered_files = {}
+		for key, value in sorted(modifiedFiles.items(), key=lambda kv: kv[1], reverse=True):
+			if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config'):
+				no_config_ordered_files[key] = value
+
+		return commitCount, ordered_committers, ordered_files, no_config_ordered_files
+
+	# def GetTotalCommits(self):
+	# 	allCommits = self.repo.iter_commits()
+	# 	count = 0
+	# 	count = sum(1 for commit in allCommits)
+	# 	return count
+
+	# def GetTopCommitters(self, max=10):
+	# 	allCommits = self.repo.iter_commits()
+	# 	dictionary = {}
+	# 	count = 0
+	# 	while True:
+	# 		try:
+	# 			element = next(allCommits)
+	# 			if element.author.name in dictionary:
+	# 				dictionary[element.author.name] = dictionary[element.author.name] + 1
+	# 			else:
+	# 				dictionary[element.author.name] = 1
+	# 		except StopIteration:
+	# 			break
+	# 	return dictionary
 			
 
 	# def GetNumberOfEdits(self, add=True, searchString='List<', yearFrom='1969', yearTo='2020'):
