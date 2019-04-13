@@ -6,6 +6,7 @@ import os
 import ComplexCalc as cc
 import shutil
 import collections
+import GraphLib as gl
 
 class GitPyService:
 	def __init__(self, url, path):
@@ -22,6 +23,7 @@ class GitPyService:
 		return Repo(path)
 
 	def get_metrics(self):
+		graphLib = gl.GraphLib()
 		allCommits = self.repo.iter_commits()
 		commitCount = 0
 		committers    = collections.OrderedDict()
@@ -34,11 +36,17 @@ class GitPyService:
 					committers[commit.author.email] = committers[commit.author.email] + 1
 				else:
 					committers[commit.author.email] = 1
+				commitFiles = commit.stats.files
 				for key in commit.stats.files:
-					if key in modifiedFiles:
-						modifiedFiles[key] = modifiedFiles[key] + 1
-					else:
-						modifiedFiles[key] = 1
+					if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config') and not key.endswith('.dll'):
+						for otherFile in commitFiles:
+							if key == otherFile:
+								continue
+							graphLib.addEdge(key, otherFile)
+						if key in modifiedFiles:
+							modifiedFiles[key] = modifiedFiles[key] + 1
+						else:
+							modifiedFiles[key] = 1
 			except StopIteration:
 				break
 
@@ -52,10 +60,12 @@ class GitPyService:
 			
 		no_config_ordered_files = {}
 		for key, value in sorted(modifiedFiles.items(), key=lambda kv: kv[1], reverse=True):
-			if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config'):
+			if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config') and not key.endswith('.dll'):
 				no_config_ordered_files[key] = value
+		
+		heaviest_edges = graphLib.getHeaviestEdges()
 
-		return commitCount, ordered_committers, ordered_files, no_config_ordered_files
+		return commitCount, ordered_committers, ordered_files, no_config_ordered_files, heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
 	# 	allCommits = self.repo.iter_commits()

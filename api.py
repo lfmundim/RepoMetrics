@@ -20,6 +20,7 @@ class RepoStats(object):
     top_committers = {}
     most_modified_files = {}
     no_config_files = {}
+    highest_couplings = []
         
 def get_range(dictionary, size):
     d = collections.OrderedDict()
@@ -49,7 +50,8 @@ class PublicRepo(Resource):
         response_object.top_committers = get_range(metrics[1], 10)
         response_object.most_modified_files = get_range(metrics[2], 10)
         response_object.no_config_files = get_range(metrics[3], 10)
-
+        response_object.highest_couplings = metrics[4]
+        #TODO: Remove txt, sln; Order couplings before getting
         shutil.rmtree('./repo', ignore_errors=True)
         response = app.response_class(
             response=json.dumps(response_object.__dict__),
