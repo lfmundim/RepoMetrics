@@ -22,6 +22,16 @@ class GitPyService:
 			Repo.clone_from(url, path)
 		return Repo(path)
 
+	def hasSomeIgnoredExtension(self, file):
+		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec']
+
+		for extension in ignoredExtensions:
+			if(file.endswith(extension)):
+				return True
+
+		return False
+	
+
 	def get_metrics(self):
 		graphLib = gl.GraphLib()
 		allCommits = self.repo.iter_commits()
@@ -38,7 +48,7 @@ class GitPyService:
 					committers[commit.author.email] = 1
 				commitFiles = commit.stats.files
 				for key in commit.stats.files:
-					if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config') and not key.endswith('.dll'):
+					if not self.hasSomeIgnoredExtension(key):
 						for otherFile in commitFiles:
 							if key == otherFile:
 								continue
@@ -60,7 +70,7 @@ class GitPyService:
 			
 		no_config_ordered_files = {}
 		for key, value in sorted(modifiedFiles.items(), key=lambda kv: kv[1], reverse=True):
-			if not key.endswith('.xml') and not key.endswith('.json') and not key.endswith('.csproj') and not key.endswith('.yml') and not key.endswith('.yaml') and not key.endswith('.md') and not key.endswith('.config') and not key.endswith('.dll'):
+			if not self.hasSomeIgnoredExtension(key):
 				no_config_ordered_files[key] = value
 		
 		heaviest_edges = graphLib.getHeaviestEdges()
