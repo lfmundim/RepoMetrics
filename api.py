@@ -21,6 +21,9 @@ class RepoStats(object):
     most_modified_files = {}
     no_config_files = {}
     commits_by_time = {}
+    cra_average_evolution = []
+    cta_average_evolution = []
+    mca_average_evolution = []
     highest_couplings = []
         
 def get_range(dictionary, size):
@@ -50,7 +53,10 @@ class PublicRepo(Resource):
         response_object.most_modified_files = get_range(metrics[2], 10)
         response_object.no_config_files = get_range(metrics[3], 10)
         response_object.commits_by_time = metrics[4]
-        response_object.highest_couplings = metrics[5]
+        response_object.cra_average_evolution = metrics[5]
+        response_object.cta_average_evolution = metrics[6]
+        response_object.mca_average_evolution = metrics[7]
+        response_object.highest_couplings = metrics[-1]
         #TODO: Remove txt, sln; Order couplings before getting
         shutil.rmtree('./repo', ignore_errors=True)
         response = app.response_class(

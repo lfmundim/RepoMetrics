@@ -1,6 +1,7 @@
 import io
 import os
 import time
+import numpy as np
 import shutil
 import collections
 import re as regex
@@ -67,16 +68,47 @@ class GitPyService:
 					lastTimestamp = commit
 		return commitsByTime
 		
+	def GetCommitedComplexityMetrics(self, commit):
+		self.repo.git.checkout(commit)
+		craDic = {}
+		ctaDic = {}
+		mcaDic = {}
+		complexCalc = cc.ComplexCalc()
+
+		for root, directory, files in os.walk(self.path):
+			for file in files:
+				if not self.hasSomeIgnoredExtension(file) and ".git" not in root.split('/'):
+					fullPath = os.path.join(root, file)
+					craDic[fullPath] = complexCalc.GetCRAByIndent(fullPath)
+					ctaDic[fullPath] = complexCalc.GetCTAByIndent(fullPath)
+					mcaDic[fullPath] = complexCalc.GetMCAByIndent(fullPath)
+
+		CraAverage = round(np.array(list(craDic.values())).mean(),3)
+		CtaAverage = round(np.array(list(ctaDic.values())).mean(),3)
+		McaAverage = round(np.array(list(mcaDic.values())).mean(),3)
+
+		return CraAverage, CtaAverage, McaAverage
+
 	def get_metrics(self):
 		graphLib = gl.GraphLib()
 		allCommits = self.repo.iter_commits()
 		committers = collections.OrderedDict()
 		modifiedFiles = collections.OrderedDict()
 		commitsTimeStamp = []
+		CraByCommit = []
+		CtaByCommit = []
+		McaByCommit = []		
+
 		while True:
 			try:
 				commit = next(allCommits)
 				
+				complexMetrics = self.GetCommitedComplexityMetrics(commit)
+				
+				CraByCommit.append(complexMetrics[0])
+				CtaByCommit.append(complexMetrics[1])
+				McaByCommit.append(complexMetrics[2])		
+
 				if(len(commitsTimeStamp) == 0 or commitsTimeStamp[-1] < commit.committed_date):
 					commitsTimeStamp.append(commit.committed_date)
 				else:
@@ -117,7 +149,7 @@ class GitPyService:
 
 		heaviest_edges = graphLib.getHeaviestEdges()
 
-		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, heaviest_edges[:10]
+		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
 	# 	allCommits = self.repo.iter_commits()
@@ -336,21 +368,3 @@ class GitPyService:
 	# 		except StopIteration:
 	# 			break
 	# 	print (dictionary)
-
-	# def GetCommitedComplexityMetrics(self, commit, folderPath, fileType='.cs'):
-	# 	self.repo.git.checkout(commit)
-	# 	craDic = {}
-	# 	ctaDic = {}
-	# 	mcaDic = {}
-	# 	complexCalc = cc.ComplexCalc()
-
-	# 	for root, directory, files in os.walk(folderPath):
-	# 		for file in files:
-	# 			if(file.endswith(fileType)):
-	# 				fullPath = os.path.join(root, file)
-	# 				craDic[fullPath] = complexCalc.GetCRAByIndent(fullPath)
-	# 				ctaDic[fullPath] = complexCalc.GetCTAByIndent(fullPath)
-	# 				mcaDic[fullPath] = complexCalc.GetMCAByIndent(fullPath)
-	# 	print('Highest CRA:\n', sorted(craDic.items(), key = lambda kv:(kv[1], kv[0]), reverse=True)[0], '\n')
-	# 	print('Highest CTA:\n', sorted(ctaDic.items(), key = lambda kv:(kv[1], kv[0]), reverse=True)[0], '\n')
-	# 	print('Highest MCA:\n', sorted(mcaDic.items(), key = lambda kv:(kv[1], kv[0]), reverse=True)[0], '\n')
