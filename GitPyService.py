@@ -1,11 +1,12 @@
 import io
-import time
-import re as regex
-from git import Repo
 import os
-import ComplexCalc as cc
+import time
 import shutil
 import collections
+import re as regex
+import ComplexCalc as cc
+from git import Repo
+from datetime import datetime
 import GraphLib as gl
 
 class GitPyService:
@@ -31,17 +32,55 @@ class GitPyService:
 
 		return False
 	
+	def GetCommitsByTime(self, commits):
+		commitsByTime = {}
 
+		if(len(commits) >= 2):
+			days = (time.mktime(time.gmtime(commits[-1])) - time.mktime(time.gmtime(commits[0])))/86400
+			count = 1
+			lastTimestamp = None
+
+			for commit in commits:
+				if((days/30) >= 3):
+					label = time.strftime("%Y", time.gmtime(commit)) if (days/365) >= 3 else time.strftime("%B-%Y", time.gmtime(commit))
+					if(label in commitsByTime):
+						commitsByTime[label] += 1
+					else:
+						commitsByTime[label] = 1
+				else:
+					diffSecs = (time.mktime(time.gmtime(commit)) - time.mktime(time.gmtime(lastTimestamp)))
+					label = 'day'
+					changeLabel = False
+					if((days/7) >= 3):
+						label = 'week'
+						changeLabel = diffSecs/86400 > 7
+					else:
+						changeLabel = diffSecs/86400 > 1
+
+					if lastTimestamp is not None and changeLabel:
+						count += 1
+					if("{}o {}".format(count, label) in commitsByTime):
+						commitsByTime["{}o {}".format(count, label)] += 1
+					else:
+						commitsByTime["{}o {}".format(count, label)] = 1
+					lastTimestamp = commit
+		return commitsByTime
+		
 	def get_metrics(self):
 		graphLib = gl.GraphLib()
 		allCommits = self.repo.iter_commits()
-		commitCount = 0
-		committers    = collections.OrderedDict()
+		committers = collections.OrderedDict()
 		modifiedFiles = collections.OrderedDict()
+		commitsTimeStamp = []
 		while True:
 			try:
 				commit = next(allCommits)
-				commitCount += 1
+				
+				if(len(commitsTimeStamp) == 0 or commitsTimeStamp[-1] < commit.committed_date):
+					commitsTimeStamp.append(commit.committed_date)
+				else:
+					commitsTimeStamp.insert(0, commit.committed_date)
+
 				if commit.author.email in committers:
 					committers[commit.author.email] = committers[commit.author.email] + 1
 				else:
@@ -73,9 +112,11 @@ class GitPyService:
 			if not self.hasSomeIgnoredExtension(key):
 				no_config_ordered_files[key] = value
 		
+		commitsByTime = self.GetCommitsByTime(commitsTimeStamp)
+
 		heaviest_edges = graphLib.getHeaviestEdges()
 
-		return commitCount, ordered_committers, ordered_files, no_config_ordered_files, heaviest_edges[:10]
+		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
 	# 	allCommits = self.repo.iter_commits()
