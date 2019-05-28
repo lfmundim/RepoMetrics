@@ -33,7 +33,7 @@ class GitPyService:
 		return False
 	
 	def GetCommitsByTime(self, commits):
-		commitsByTime = {}
+		commitsByTime = collections.OrderedDict()
 
 		if(len(commits) >= 2):
 			days = (time.mktime(time.gmtime(commits[-1])) - time.mktime(time.gmtime(commits[0])))/86400
@@ -59,10 +59,11 @@ class GitPyService:
 
 					if lastTimestamp is not None and changeLabel:
 						count += 1
-					if("{}o {}".format(count, label) in commitsByTime):
-						commitsByTime["{}o {}".format(count, label)] += 1
+					dictLabel = "{} #{}".format(label, count)
+					if(dictLabel in commitsByTime):
+						commitsByTime[dictLabel] += 1
 					else:
-						commitsByTime["{}o {}".format(count, label)] = 1
+						commitsByTime[dictLabel] = 1
 					lastTimestamp = commit
 		return commitsByTime
 		
