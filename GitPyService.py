@@ -25,7 +25,7 @@ class GitPyService:
 		return Repo(path)
 
 	def hasSomeIgnoredExtension(self, file):
-		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec']
+		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec', '.exe', '.out', '.png', '.pdf', '.csv', '.bmp', '.ico', '.jpg', '.jpeg', '.pfx']
 
 		for extension in ignoredExtensions:
 			if(file.endswith(extension)):
@@ -90,7 +90,7 @@ class GitPyService:
 		return CraAverage, CtaAverage, McaAverage
 
 	def get_metrics(self):
-		graphLib = gl.GraphLib()
+		graph = gl.GraphLib()
 		allCommits = self.repo.iter_commits()
 		committers = collections.OrderedDict()
 		modifiedFiles = collections.OrderedDict()
@@ -122,9 +122,9 @@ class GitPyService:
 				for key in commit.stats.files:
 					if not self.hasSomeIgnoredExtension(key):
 						for otherFile in commitFiles:
-							if key == otherFile:
+							if key == otherFile or self.hasSomeIgnoredExtension(otherFile):
 								continue
-							graphLib.addEdge(key, otherFile)
+							graph.addEdge(key, otherFile)
 						if key in modifiedFiles:
 							modifiedFiles[key] = modifiedFiles[key] + 1
 						else:
@@ -147,9 +147,10 @@ class GitPyService:
 		
 		commitsByTime = self.GetCommitsByTime(commitsTimeStamp)
 
-		heaviest_edges = graphLib.getHeaviestEdges()
+		heaviest_edges = graph.getHeaviestEdges()
+		mostImportantFile = graph.GetMostImportantFile()
 
-		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, heaviest_edges[:10]
+		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFile, heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
 	# 	allCommits = self.repo.iter_commits()
