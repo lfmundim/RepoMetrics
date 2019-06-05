@@ -6,27 +6,31 @@ class ComplexCalc:
 		maxIndent = 0
 		lineCount = 0
 		
-		with open(file, 'rU') as f:
-			for line in f:
-				lineCount += 1
-				currentIndent = 0
-				caracterCount = 0
-				for caracter in line:
-					if caracter == ' ':
-						currentIndent += 1
-						caracterCount += 1
-					elif caracter == '\t':
-						currentIndent += 4
-						caracterCount += 4
+		try:
+			with open(file, 'rU') as f:
+				for line in f:
+					lineCount += 1
+					currentIndent = 0
+					caracterCount = 0
+					for caracter in line:
+						if caracter == ' ':
+							currentIndent += 1
+							caracterCount += 1
+						elif caracter == '\t':
+							currentIndent += 4
+							caracterCount += 4
+						else:
+							caracterCount += 1
+							break
+					if caracterCount == currentIndent: #ignore; empty line
+						continue
 					else:
-						caracterCount += 1
-						break
-				if caracterCount == currentIndent: #ignore; empty line
-					continue
-				else:
-					totalIndent += int(currentIndent / 4)
-					if(int(currentIndent / 4) > maxIndent):
-						maxIndent = int(currentIndent / 4)
+						totalIndent += int(currentIndent / 4)
+						if(int(currentIndent / 4) > maxIndent):
+							maxIndent = int(currentIndent / 4)
+		except UnicodeDecodeError:
+			return 0,0,0
+
 		return totalIndent, maxIndent, lineCount
 
 	def GetCTAByIndent(self, file):

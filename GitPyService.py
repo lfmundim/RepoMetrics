@@ -25,10 +25,10 @@ class GitPyService:
 		return Repo(path)
 
 	def hasSomeIgnoredExtension(self, file):
-		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec', '.exe', '.out', '.png', '.pdf', '.csv', '.bmp', '.ico', '.jpg', '.jpeg', '.pfx']
+		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec', '.exe', '.out', '.png', '.pdf', '.csv', '.bmp', '.ico', '.jpg', '.jpeg', '.pfx', '.pyc', '.DS_Store', '.dockerignore', '.txt', 'LICENSE', 'Dockerfile', 'ISSUE_TEMPLATE', '.resx', '.patch', '.targets']
 
 		for extension in ignoredExtensions:
-			if(file.endswith(extension)):
+			if(file.lower().endswith(extension.lower())):
 				return True
 
 		return False
@@ -105,9 +105,9 @@ class GitPyService:
 				
 				complexMetrics = self.GetCommitedComplexityMetrics(commit)
 				
-				CraByCommit.append(complexMetrics[0])
-				CtaByCommit.append(complexMetrics[1])
-				McaByCommit.append(complexMetrics[2])		
+				if complexMetrics[0] > 0: CraByCommit.append(complexMetrics[0])
+				if complexMetrics[1] > 0: CtaByCommit.append(complexMetrics[1])
+				if complexMetrics[2] > 0: McaByCommit.append(complexMetrics[2])
 
 				if(len(commitsTimeStamp) == 0 or commitsTimeStamp[-1] < commit.committed_date):
 					commitsTimeStamp.append(commit.committed_date)
