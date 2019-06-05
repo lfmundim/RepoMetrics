@@ -20,17 +20,15 @@ class GraphLib:
 			heaviestEdges.append(newItem)
 		return sorted(heaviestEdges, key=lambda tup: tup[1], reverse=True)
 
-	def getMostRelatedNode(self):
-		maxRelated = 0
-
+	def getMostRelatedNodes(self):
+		mostRelatedNodes = []
 		for node in self.graph.nodes:
 			neighborCount = sum(1 for neighbor in nx.neighbors(self.graph, node))
-			if(neighborCount > maxRelated):
-				maxRelated = neighborCount
-				mostRelatedNode = node
-		return mostRelatedNode, maxRelated
+			newItem = (node, neighborCount)
+			mostRelatedNodes.append(newItem)
+		return sorted(mostRelatedNodes, key=lambda tup: tup[1], reverse=True)
 
-	def GetMostImportantFile(self):
+	def GetMostImportantFiles(self):
 		removedCount = 0
 		total = 0
 		removeList = []
@@ -64,5 +62,4 @@ class GraphLib:
 				removedCount += 2
 		self.graph.remove_edges_from(removeList)
 		total -= removedCount
-		mostRelatedNode = self.getMostRelatedNode()
-		return mostRelatedNode
+		return self.getMostRelatedNodes()

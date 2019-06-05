@@ -148,9 +148,9 @@ class GitPyService:
 		commitsByTime = self.GetCommitsByTime(commitsTimeStamp)
 
 		heaviest_edges = graph.getHeaviestEdges()
-		mostImportantFile = graph.GetMostImportantFile()
+		mostImportantFiles = graph.GetMostImportantFiles()
 
-		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFile, heaviest_edges[:10]
+		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFiles[:10], heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
 	# 	allCommits = self.repo.iter_commits()

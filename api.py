@@ -24,7 +24,7 @@ class RepoStats(object):
     cra_average_evolution = []
     cta_average_evolution = []
     mca_average_evolution = []
-    mostImportantFile = ''
+    mostImportantFiles = []
     highest_couplings = []
         
 def get_range(dictionary, size):
@@ -57,7 +57,7 @@ class PublicRepo(Resource):
         response_object.cra_average_evolution = metrics[5]
         response_object.cta_average_evolution = metrics[6]
         response_object.mca_average_evolution = metrics[7]
-        response_object.mostImportantFile = metrics[8]
+        response_object.mostImportantFiles = metrics[8]
         response_object.highest_couplings = metrics[9]
         shutil.rmtree('./repo', ignore_errors=True)
         response = app.response_class(
