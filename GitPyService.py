@@ -16,12 +16,13 @@ class GitPyService:
 		self.path = path
 		self.repo = self.InitializeRepo(url, path)
 
-	def InitializeRepo(self, url, path):
-		try:
-			Repo.clone_from(url, path)
-		except:
-			shutil.rmtree(path, ignore_errors=True)
-			Repo.clone_from(url, path)
+	def InitializeRepo(self, url = '[empty]', path = ''):
+		if url != '[empty]':
+			try:
+				Repo.clone_from(url, path)
+			except:
+				shutil.rmtree(path, ignore_errors=True)
+				Repo.clone_from(url, path)
 		return Repo(path)
 
 	def hasSomeIgnoredExtension(self, file):
