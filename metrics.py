@@ -4,6 +4,7 @@ import shutil
 import json
 import GitPyService as gps
 import collections
+import MarkdownWriter as mdw
 
 class RepoStats(object):
     def __init__(self, url):
@@ -74,3 +75,6 @@ else:
     output_json = open(repo_name+'.json','w')
     output_json.write(json.dumps(response_object.__dict__))
     output_json.close()
+
+    writer = mdw.MarkdownWriter(response_object)
+    writer.Write()
