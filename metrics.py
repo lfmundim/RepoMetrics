@@ -46,9 +46,11 @@ if (args.repo == 'no-repo' and args.folder == 'no-folder') or (args.repo != 'no-
 else:
     if args.repo != 'no-repo':
         git_service = gps.GitPyService(path='./repo', url=args.repo)
+        repo_name = args.repo.split('/')[-1]
     else:
         git_service = gps.GitPyService(url='[empty]', path=args.folder)
-    
+        repo_name = args.folder.split('/')[-1]
+
     response_object = RepoStats(url=args.repo)
 
     metrics = git_service.get_metrics()
@@ -66,4 +68,9 @@ else:
     if args.repo != 'no-repo':
         shutil.rmtree('./repo', ignore_errors=True)
 
-    print (json.dumps(response_object.__dict__))
+    #print (json.dumps(response_object.__dict__))
+    
+    # Prints .json file with all metrics calculated
+    output_json = open(repo_name+'.json','w')
+    output_json.write(json.dumps(response_object.__dict__))
+    output_json.close()
