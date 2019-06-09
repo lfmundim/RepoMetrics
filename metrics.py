@@ -5,6 +5,7 @@ import json
 import GitPyService as gps
 import collections
 import MarkdownWriter as mdw
+import matplotlib.pyplot as plt
 
 class RepoStats(object):
     def __init__(self, url):
@@ -68,8 +69,6 @@ else:
     response_object.highest_couplings = metrics[9]
     if args.repo != 'no-repo':
         shutil.rmtree('./repo', ignore_errors=True)
-
-    #print (json.dumps(response_object.__dict__))
     
     # Prints .json file with all metrics calculated
     output_json = open(repo_name+'.json','w')
