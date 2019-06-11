@@ -1,3 +1,4 @@
+import os
 import argparse
 from git import Repo
 import shutil
@@ -5,15 +6,12 @@ import json
 import GitPyService as gps
 import collections
 import MarkdownWriter as mdw
-import matplotlib.pyplot as plt
 
 class RepoStats(object):
-    def __init__(self, url):
-     #   self.owner = owner
-        self.url = url
+    def __init__(self, name):
+        self.name = name
     
-    #owner = ''
-    url = ''
+    name = ''
     commit_count = 0
     top_committers = {}
     most_modified_files = {}
@@ -50,10 +48,13 @@ else:
         git_service = gps.GitPyService(path='./repo', url=args.repo)
         repo_name = args.repo.split('/')[-1]
     else:
+        if(args.folder.endswith('/')):
+           args.folder = args.folder[:-1] 
+
         git_service = gps.GitPyService(url='[empty]', path=args.folder)
         repo_name = args.folder.split('/')[-1]
 
-    response_object = RepoStats(url=args.repo)
+    response_object = RepoStats(name=repo_name)
 
     metrics = git_service.get_metrics()
     
@@ -70,8 +71,11 @@ else:
     if args.repo != 'no-repo':
         shutil.rmtree('./repo', ignore_errors=True)
     
+    if not os.path.exists('output'):
+                os.makedirs('output')
+
     # Prints .json file with all metrics calculated
-    output_json = open(repo_name+'.json','w')
+    output_json = open('output/{}.json'.format(repo_name),'w')
     output_json.write(json.dumps(response_object.__dict__))
     output_json.close()
 
