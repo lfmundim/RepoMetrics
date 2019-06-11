@@ -8,6 +8,7 @@ import re as regex
 import ComplexCalc as cc
 from git import Repo
 from datetime import datetime
+import warnings
 import GraphLib as gl
 
 class GitPyService:
@@ -84,9 +85,11 @@ class GitPyService:
 					ctaDic[fullPath] = complexCalc.GetCTAByIndent(fullPath)
 					mcaDic[fullPath] = complexCalc.GetMCAByIndent(fullPath)
 
-		CraAverage = round(np.array(list(craDic.values())).mean(),3)
-		CtaAverage = round(np.array(list(ctaDic.values())).mean(),3)
-		McaAverage = round(np.array(list(mcaDic.values())).mean(),3)
+		with warnings.catch_warnings():
+			warnings.simplefilter("ignore", category=RuntimeWarning)
+			CraAverage = round(np.array(list(craDic.values())).mean(),3)
+			CtaAverage = round(np.array(list(ctaDic.values())).mean(),3)
+			McaAverage = round(np.array(list(mcaDic.values())).mean(),3)
 
 		return CraAverage, CtaAverage, McaAverage
 
