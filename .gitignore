@@ -1,10 +1,11 @@
-# Images / Dataset files
+# Output files
+*.json
 *.jpeg
 *.jpg
 *.png
-*.gif
 *.bmp
-*.csv
+output/
+output
 
 # Byte-compiled / optimized / DLL files
 __pycache__
