@@ -13,9 +13,7 @@ class MarkdownWriter:
         plt.tight_layout()
         plt.xticks(rotation=45)
         plt.subplots_adjust(bottom=0.5)
-        size = plt.rcParams['figure.figsize']
-        plt.rcParams['figure.figsize'] = size
-        plt.savefig('output/{}.png'.format(filename), aspect='auto')
+        plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
         plt.close()    
 
     def Save_Line_Plot_1D(self, xsource, filename, xlabel, ylabel):
@@ -25,9 +23,7 @@ class MarkdownWriter:
         plt.tight_layout()
         plt.xticks(rotation=45)
         plt.subplots_adjust(bottom=0.5)
-        size = plt.rcParams['figure.figsize']
-        plt.rcParams['figure.figsize'] = size
-        plt.savefig('output/{}.png'.format(filename), aspect='auto')
+        plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
         plt.close()
 
     def Save_Bar_Plot(self, xsource, ysource, filename, xlabel, ylabel):
@@ -37,17 +33,15 @@ class MarkdownWriter:
         plt.tight_layout()
         plt.xticks(rotation=45)
         plt.subplots_adjust(bottom=0.5)
-        size = plt.rcParams['figure.figsize']
-        plt.rcParams['figure.figsize'] = size
-        plt.savefig('output/{}.png'.format(filename), aspect='auto')
+        plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
         plt.close()    
 
     def Write(self):
         markdown = open('output/{}.md'.format(self.repo_metrics.name), 'w')
 
         self.Save_Line_Plot(list(self.repo_metrics.commits_by_time.keys()), list(self.repo_metrics.commits_by_time.values()), 'commits', 'period', 'commits')
-        self.Save_Bar_Plot(self.repo_metrics.top_committers.keys(), self.repo_metrics.top_committers.values(), 'top_committers', 'commits', 'committer')
-        self.Save_Bar_Plot(self.repo_metrics.most_modified_files.keys(), self.repo_metrics.most_modified_files.values(), 'most_modified_files', 'mods', 'file')
+        self.Save_Bar_Plot(list(self.repo_metrics.top_committers.keys()), list(self.repo_metrics.top_committers.values()), 'top_committers', 'commits', 'committer')
+        self.Save_Bar_Plot(list(self.repo_metrics.most_modified_files.keys()), list(self.repo_metrics.most_modified_files.values()), 'most_modified_files', 'mods', 'file')
         self.Save_Line_Plot_1D(self.repo_metrics.cra_average_evolution, filename='cra', xlabel='period', ylabel='CRA')
         self.Save_Line_Plot_1D(self.repo_metrics.cta_average_evolution, filename='cta', xlabel='period', ylabel='CTA')
         self.Save_Line_Plot_1D(self.repo_metrics.mca_average_evolution, filename='mca', xlabel='period', ylabel='MCA')
