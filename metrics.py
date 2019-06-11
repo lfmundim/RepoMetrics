@@ -1,6 +1,5 @@
 import os
 import argparse
-from git import Repo
 import shutil
 import json
 import GitPyService as gps
@@ -72,7 +71,10 @@ else:
         shutil.rmtree('./repo', ignore_errors=True)
     
     if not os.path.exists('output'):
-                os.makedirs('output')
+        os.makedirs('output')
+    else:
+        shutil.rmtree('output')
+        os.makedirs('output')
 
     # Prints .json file with all metrics calculated
     output_json = open('output/{}.json'.format(repo_name),'w')
