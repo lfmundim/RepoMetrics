@@ -157,6 +157,9 @@ class GitPyService:
 		mostImportantFiles = graph.GetMostImportantFiles()
 		
 		self.repo.git.checkout('master')
+		CraByCommit.reverse()
+		CtaByCommit.reverse()
+		McaByCommit.reverse()
 		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFiles[:10], heaviest_edges[:10]
 
 	# def GetTotalCommits(self):
