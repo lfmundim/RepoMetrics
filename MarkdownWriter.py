@@ -1,5 +1,6 @@
 import io
 import json
+import numpy as np
 import matplotlib.pyplot as plt
 
 class MarkdownWriter:
@@ -26,6 +27,20 @@ class MarkdownWriter:
         plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
         plt.close()
 
+    def Save_Horizontal_Bar_Plot(self, xsource, ysource, filename, xlabel, ylabel):
+        plt.rcdefaults()
+        fig, ax = plt.subplots()
+        y_pos = np.arange(len(xsource))
+        ax.barh(y_pos, ysource, align='center')
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(xsource)
+        ax.invert_yaxis()
+        ax.set_xlabel(xlabel)
+        ax.set_xlabel(ylabel)
+        plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
+        plt.close()
+        del fig
+
     def Save_Bar_Plot(self, xsource, ysource, filename, xlabel, ylabel):
         plt.bar(xsource, ysource)
         plt.ylabel(ylabel)
@@ -45,6 +60,7 @@ class MarkdownWriter:
         self.Save_Line_Plot_1D(self.repo_metrics.cra_average_evolution, filename='cra', xlabel='period', ylabel='CRA')
         self.Save_Line_Plot_1D(self.repo_metrics.cta_average_evolution, filename='cta', xlabel='period', ylabel='CTA')
         self.Save_Line_Plot_1D(self.repo_metrics.mca_average_evolution, filename='mca', xlabel='period', ylabel='MCA')
+        self.Save_Horizontal_Bar_Plot(list([x[0] for x in self.repo_metrics.mostImportantFiles]), list([x[1] for x in self.repo_metrics.mostImportantFiles]), 'most_important_files', 'file', 'commits')
 
         markdown.write('# ' + self.repo_metrics.name + '\n')
         markdown.write('## Basics\n')
@@ -69,7 +85,7 @@ class MarkdownWriter:
         markdown.write('### Average MCA\n')    
         markdown.write('MCA stands for *Biggest file complexity*\n')
         markdown.write('![](mca.png)\n')
-        #markdown.write('### Most \"important\" files\n')    
-        #markdown.write('![](important.png)\n')
+        markdown.write('### Most \"important\" files\n')    
+        markdown.write('![](most_important_files.png)\n')
 
         markdown.close()
