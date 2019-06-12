@@ -24,6 +24,8 @@ class GraphLib:
 		mostRelatedNodes = []
 		for node in self.graph.nodes:
 			neighborCount = sum(1 for neighbor in nx.neighbors(self.graph, node))
+			if('/' in node):
+				node = (node.split('/'))[-1]
 			newItem = (node, neighborCount)
 			mostRelatedNodes.append(newItem)
 		return sorted(mostRelatedNodes, key=lambda tup: tup[1], reverse=True)
