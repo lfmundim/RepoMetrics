@@ -2,10 +2,12 @@ import io
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import networkx as nx
 
 class MarkdownWriter:
-    def __init__(self, repo_metrics):
+    def __init__(self, repo_metrics, graph):
         self.repo_metrics = repo_metrics
+        self.graph = graph
 
     def Save_Line_Plot(self, xsource, ysource, filename, xlabel, ylabel):
         plt.plot(xsource, ysource)
@@ -51,6 +53,30 @@ class MarkdownWriter:
         plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
         plt.close()    
 
+    def Plot_Coupling_Graph(self):
+        fig = plt.figure(figsize=(20, 20))
+
+        elarge = [(u, v) for (u, v, d) in self.graph.edges(data=True) if d['weight'] > 7]
+        esmall = [(u, v) for (u, v, d) in self.graph.edges(data=True) if d['weight'] <= 7]
+
+        pos = nx.spring_layout(self.graph, k=2)  # positions for all nodes
+
+        # nodes
+        nx.draw_networkx_nodes(self.graph, pos, node_size=70)
+
+        # edges
+        nx.draw_networkx_edges(self.graph, pos, edgelist=elarge,
+                            width=2)
+        nx.draw_networkx_edges(self.graph, pos, edgelist=esmall,
+                            width=2, alpha=0.5, edge_color='b', style='dashed')
+
+        # labels
+        nx.draw_networkx_labels(self.graph, pos, font_size=10, font_family='sans-serif')
+
+        plt.axis('off')
+        plt.savefig('output/coupling.png', aspect='auto',  bbox_inches = 'tight')
+        plt.close()
+
     def Write(self):
         markdown = open('output/{}.md'.format(self.repo_metrics.name), 'w')
 
@@ -61,6 +87,7 @@ class MarkdownWriter:
         self.Save_Line_Plot_1D(self.repo_metrics.cta_average_evolution, filename='cta', xlabel='period', ylabel='CTA')
         self.Save_Line_Plot_1D(self.repo_metrics.mca_average_evolution, filename='mca', xlabel='period', ylabel='MCA')
         self.Save_Horizontal_Bar_Plot(list([x[0] for x in self.repo_metrics.mostImportantFiles]), list([x[1] for x in self.repo_metrics.mostImportantFiles]), 'most_important_files', 'file', 'commits')
+        self.Plot_Coupling_Graph()
 
         markdown.write('# ' + self.repo_metrics.name + '\n')
         markdown.write('## Basics\n')
@@ -73,9 +100,9 @@ class MarkdownWriter:
         markdown.write('## Advanced Metrics\n')
         markdown.write('### Most modified files:\n')
         markdown.write('![](most_modified_files.png)\n')
-        #markdown.write('### Highest couplings\n')
-        #markdown.write('_Coupling means that the files have been modified together frequently_\n')
-        #markdown.write('COLOCAR GRAFO DE COUPLING')
+        markdown.write('### Highest couplings\n')
+        markdown.write('_Coupling means that the files have been modified together frequently_\n')
+        markdown.write('![](coupling.png)\n')
         markdown.write('### Average CRA\n')    
         markdown.write('CRA stands for *Relative File Complexity*\n')
         markdown.write('![](cra.png)\n')

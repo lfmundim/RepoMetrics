@@ -25,7 +25,7 @@ class RepoStats(object):
 def get_range(dictionary, size):
     d = collections.OrderedDict()
     count = 0
-    for k, v in (dictionary.items()):
+    for k, v in sorted(dictionary.items(), key=lambda kv: kv[1], reverse=True):
         d[k] = v
         count += 1
         if count == size:
@@ -67,6 +67,8 @@ else:
     response_object.mca_average_evolution = metrics[7]
     response_object.mostImportantFiles = metrics[8]
     response_object.highest_couplings = metrics[9]
+    graph = metrics[10]
+
     if args.repo != 'no-repo':
         shutil.rmtree('./repo', ignore_errors=True)
     
@@ -81,5 +83,5 @@ else:
     output_json.write(json.dumps(response_object.__dict__))
     output_json.close()
 
-    writer = mdw.MarkdownWriter(response_object)
+    writer = mdw.MarkdownWriter(response_object, graph)
     writer.Write()
