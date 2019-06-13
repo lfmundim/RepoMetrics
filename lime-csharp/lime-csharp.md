@@ -7,10 +7,15 @@
 ### Top committers:
 ![](top_committers.png)
 ---
+### Truck Factors:
+#### - André Bires
+---
+### Authors:
+![](authorsWordCloud.png)
 ## Advanced Metrics
 ### Most modified files:
 ![](most_modified_files.png)
-### Couplings
+### Highest couplings
 _Coupling means that the files have been modified together frequently_
 ![](coupling.png)
 ### Average CRA

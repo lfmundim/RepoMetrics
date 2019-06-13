@@ -1,12 +1,33 @@
 # core
 ## Basics
-### Total commits: 2130
+### Total commits: 2134
 
 ### Commits by time:
 ![](commits.png)
 ### Top committers:
 ![](top_committers.png)
 ---
+### Truck Factors:
+#### - Lee Coward
+#### - Bryan Arant
+#### - Arthur Rump
+#### - wtgodbe
+#### - Sunanda Balasubramanian
+#### - Bryan P. Arant
+#### - root
+#### - Next Turn
+#### - Rich Lander
+#### - Zlatko Knezevic
+#### - leecow
+#### - Preeti Krishna
+#### - David Lechner
+#### - Kathleen Dollard
+#### - Sławomir Bryś
+#### - Stephen Kennedy
+#### - Matt Mitchell
+---
+### Authors:
+![](authorsWordCloud.png)
 ## Advanced Metrics
 ### Most modified files:
 ![](most_modified_files.png)

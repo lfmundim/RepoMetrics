@@ -1,6 +1,6 @@
-# Blip.HttpClient
+# RepoMetrics
 ## Basics
-### Total commits: 75
+### Total commits: 36
 
 ### Commits by time:
 ![](commits.png)
@@ -8,7 +8,7 @@
 ![](top_committers.png)
 ---
 ### Truck Factors:
-#### - lfmundim
+#### - Rafael Torres
 ---
 ### Authors:
 ![](authorsWordCloud.png)
