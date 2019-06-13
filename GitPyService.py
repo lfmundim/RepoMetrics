@@ -169,7 +169,6 @@ class GitPyService:
 			
 		ordered_files = {}
 		for key, value in sorted(modifiedFiles.items(), key=lambda kv: kv[1], reverse=True):
-			print(key, value)
 			if('/' in key):
 				key = (key.split('/'))[-1]
 			ordered_files[key] = value
