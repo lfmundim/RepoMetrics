@@ -1,9 +1,4 @@
 # Output files
-*.json
-*.jpeg
-*.jpg
-*.png
-*.bmp
 output/
 output
 
