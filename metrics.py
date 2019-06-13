@@ -68,6 +68,8 @@ else:
     response_object.mostImportantFiles = metrics[8]
     response_object.highest_couplings = metrics[9]
     graph = metrics[10]
+    response_object.filesAuthorList = metrics[11]
+    response_object.truckFactor = metrics[12]
 
     if args.repo != 'no-repo':
         shutil.rmtree('./repo', ignore_errors=True)

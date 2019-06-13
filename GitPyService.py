@@ -11,6 +11,7 @@ from datetime import datetime
 import warnings
 import GraphLib as gl
 import networkx as nx
+import Authorship as at
 
 class GitPyService:
 	def __init__(self, url, path):
@@ -28,7 +29,7 @@ class GitPyService:
 		return Repo(path)
 
 	def hasSomeIgnoredExtension(self, file):
-		ignoredExtensions = ['.xml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec', '.exe', '.out', '.png', '.pdf', '.csv', '.bmp', '.ico', '.jpg', '.jpeg', '.pfx', '.pyc', '.DS_Store', '.dockerignore', '.txt', 'LICENSE', 'Dockerfile', 'ISSUE_TEMPLATE', '.resx', '.patch', '.targets']
+		ignoredExtensions = ['.xml', '.xaml', '.json', '.csproj', '.yml', '.yaml', '.md', '.config', '.dll', '.sln', '.gitignore', '.gitattributes', '.lock', '.ide', '.db', '.nuspec', '.exe', '.out', '.png', '.pdf', '.csv', '.bmp', '.ico', '.jpg', '.jpeg', '.pfx', '.pyc', '.DS_Store', '.dockerignore', '.txt', 'LICENSE', 'Dockerfile', 'ISSUE_TEMPLATE', '.resx', '.patch', '.targets']
 
 		for extension in ignoredExtensions:
 			if(file.lower().endswith(extension.lower())):
@@ -100,6 +101,7 @@ class GitPyService:
 		committers = collections.OrderedDict()
 		modifiedFiles = collections.OrderedDict()
 		commitsTimeStamp = []
+		files = {}
 		CraByCommit = []
 		CtaByCommit = []
 		McaByCommit = []		
@@ -136,6 +138,11 @@ class GitPyService:
 				commitFiles = commit.stats.files
 				for key in commit.stats.files:
 					if not self.hasSomeIgnoredExtension(key):
+						if key not in files:
+							files[key] = []
+							files[key].append(commit.author.name)
+						else:
+							files[key].append(commit.author.name)
 						for otherFile in commitFiles:
 							if key == otherFile or self.hasSomeIgnoredExtension(otherFile):
 								continue
@@ -183,8 +190,13 @@ class GitPyService:
 		heaviest_edges = graph.getHeaviestEdges()
 		mostImportantFiles = graph.GetMostImportantFiles()
 		
+		authorship = at.Authorship(files)
+		
+		truckFactor = authorship.truckFactor
+		filesAuthorList = authorship.fullAuthorList
+
 		self.repo.git.checkout('master')
 		CraByCommit.reverse()
 		CtaByCommit.reverse()
 		McaByCommit.reverse()
-		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFiles[:10], heaviest_edges[:10], g
+		return len(commitsTimeStamp), ordered_committers, ordered_files, no_config_ordered_files, commitsByTime, CraByCommit, CtaByCommit, McaByCommit, mostImportantFiles[:10], heaviest_edges[:10], g, filesAuthorList, truckFactor

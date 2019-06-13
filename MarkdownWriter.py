@@ -4,10 +4,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 
+import os
+
+from os import path
+from wordcloud import WordCloud
+
 class MarkdownWriter:
     def __init__(self, repo_metrics, graph):
         self.repo_metrics = repo_metrics
         self.graph = graph
+
+    def Save_Word_Cloud(self, dictionary, filename):
+        text = ""
+        for key in dictionary:
+            for i in range(dictionary[key]):
+                text += "{} ".format(key)
+
+        wordcloud = WordCloud().generate(text)
+
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis("off")
+        wordcloud = WordCloud(max_font_size=40).generate(text)
+        plt.figure()
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis("off")
+        plt.savefig('output/{}.png'.format(filename), aspect='auto',  bbox_inches = 'tight')
+        plt.close()
 
     def Save_Line_Plot(self, xsource, ysource, filename, xlabel, ylabel):
         plt.plot(xsource, ysource)
@@ -87,6 +109,7 @@ class MarkdownWriter:
         self.Save_Line_Plot_1D(self.repo_metrics.cta_average_evolution, filename='cta', xlabel='period', ylabel='CTA')
         self.Save_Line_Plot_1D(self.repo_metrics.mca_average_evolution, filename='mca', xlabel='period', ylabel='MCA')
         self.Save_Horizontal_Bar_Plot(list([x[0] for x in self.repo_metrics.mostImportantFiles]), list([x[1] for x in self.repo_metrics.mostImportantFiles]), 'most_important_files', 'file', 'commits')
+        self.Save_Word_Cloud(self.repo_metrics.filesAuthorList, 'authorsWordCloud')
         self.Plot_Coupling_Graph()
 
         markdown.write('# ' + self.repo_metrics.name + '\n')
@@ -97,6 +120,13 @@ class MarkdownWriter:
         markdown.write('### Top committers:\n')
         markdown.write('![](top_committers.png)\n')
         markdown.write('---\n')
+        if(len(self.repo_metrics.truckFactor) > 0):
+            markdown.write('### Truck Factors:\n')
+            for author in self.repo_metrics.truckFactor:
+                markdown.write('#### - {}\n'.format(author))
+            markdown.write('---\n')
+        markdown.write('### Authors:\n')
+        markdown.write('![](authorsWordCloud.png)\n')
         markdown.write('## Advanced Metrics\n')
         markdown.write('### Most modified files:\n')
         markdown.write('![](most_modified_files.png)\n')
