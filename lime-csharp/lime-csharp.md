@@ -10,7 +10,7 @@
 ## Advanced Metrics
 ### Most modified files:
 ![](most_modified_files.png)
-### Highest couplings
+### Couplings
 _Coupling means that the files have been modified together frequently_
 ![](coupling.png)
 ### Average CRA
